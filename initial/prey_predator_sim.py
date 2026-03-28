@@ -8,6 +8,7 @@ Predator–prey simulations aligned with:
 Run: python prey_predator_sim.py
      python prey_predator_sim.py --model lotka
      python prey_predator_sim.py --model wolves
+     python prey_predator_sim.py --model scavenger
 """
 
 from __future__ import annotations
@@ -19,6 +20,12 @@ from typing import Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
+
+from three_species_scavenger_sim import (
+    ThreeSpeciesParams,
+    plot_three_species,
+    simulate_three_species,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -176,9 +183,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Predator–prey simulations (paper + notebook).")
     parser.add_argument(
         "--model",
-        choices=("lotka", "wolves", "both"),
+        choices=("lotka", "wolves", "scavenger", "both"),
         default="both",
-        help="Which model to run (default: both).",
+        help="Which model to run (default: both = Lotka + plant–deer–wolves).",
     )
     parser.add_argument("--no-show", action="store_true", help="Save figures only, do not open windows.")
     args = parser.parse_args()
@@ -199,6 +206,13 @@ def main() -> None:
         out_w = "plant_deer_wolves.png"
         plot_plant_deer_wolves(time, plant, deer, wolves, outfile=out_w, show=show_plots)
         print(f"Wrote {out_w}")
+
+    if args.model == "scavenger":
+        p3 = ThreeSpeciesParams()
+        t3, y3 = simulate_three_species(p3, x0=10.0, y0=5.0, z0=2.0)
+        out_s = "three_species_scavenger.png"
+        plot_three_species(t3, y3, outfile=out_s, show=show_plots)
+        print(f"Wrote {out_s}")
 
 
 if __name__ == "__main__":
